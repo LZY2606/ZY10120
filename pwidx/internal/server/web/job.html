@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>作业 {{.Job.ID}} · 粉末衍射索引</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <h1><a href="/" style="color:var(--fg)">粉末衍射晶格索引</a></h1>
+  <span class="sub">作业 {{.Job.ID}}</span>
+  <span style="flex:1"></span>
+  <a class="pill" href="/api/jobs/{{.Job.ID}}/manifest">下载计算清单</a>
+</header>
+<main>
+<section class="card">
+  <div class="row">
+    <div><span class="muted">状态：</span><span id="status" class="tag">{{.Job.Status}}</span></div>
+    <div class="muted mono">指纹 {{.Job.Fingerprint}}</div>
+    <div style="flex:1"></div>
+    <button class="ghost small" id="cancelBtn">中止</button>
+    <button class="ghost small" onclick="location.reload()">刷新</button>
+  </div>
+  <div id="issues" style="margin-top:10px"></div>
+</section>
+
+<section class="card" style="margin-top:16px" id="candCard">
+  <h2>Top-K 候选（已约化为标准形，同分按确定性比较键排序）</h2>
+  <div id="candidates"></div>
+  <div id="runningHint" class="muted" style="margin-top:8px">求解进行中，页面每 1 秒轮询；中止时不会发布半成品 Top-K。</div>
+</section>
+
+<section class="card" style="margin-top:16px">
+  <h2>输入摘要</h2>
+  <pre id="configJson" class="muted mono" style="white-space:pre-wrap;font-size:12px;max-height:260px;overflow:auto"></pre>
+</section>
+</main>
+<div class="tooltip" id="tip"></div>
+<script>
+window.__BOOT_CONFIG__ = {{if .Config}}{{json .Config}}{{else}}{}{{end}};
+window.__BOOT_RESULT__ = {{if .Result}}{{json .Result}}{{else}}null{{end}};
+app && app.setJobID({{json .Job.ID}});
+</script>
+<script src="/static/app.js"></script>
+<script>app.initJob({{json .Job.ID}}, {{.Active}})</script>
+</body>
+</html>

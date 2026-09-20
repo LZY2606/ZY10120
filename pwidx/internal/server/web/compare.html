@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>候选比较 · 粉末衍射索引</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <h1><a href="/" style="color:var(--fg)">粉末衍射晶格索引</a></h1>
+  <span class="sub">候选并排比较</span>
+</header>
+<main>
+<section class="card">
+  <h2>比较两个或多个冻结候选</h2>
+  <p class="muted" style="font-size:12.5px">每行粘贴一个候选标识，格式 <span class="mono">jobID/candidateID</span>（候选页 URL 的末两段）。保存后可重复查看；候选内容与当时规则、算法版本一起冻结。</p>
+  <textarea id="ids" placeholder="job-2f3a..../cand-...."></textarea>
+  <label>集合名称</label>
+  <input type="text" id="label" placeholder="例如 cubic-F vs tetragonal-P">
+  <div class="row" style="margin-top:10px">
+    <button id="save">保存并比较</button>
+    <span id="msg" class="muted"></span>
+  </div>
+</section>
+
+<section class="card" style="margin-top:16px">
+  <h2>比较结果</h2>
+  <div id="diffTable"><p class="muted">输入候选标识后点击保存。</p></div>
+</section>
+
+<section class="card" style="margin-top:16px">
+  <h2>已保存集合</h2>
+  <table id="sets"><thead><tr><th>名称</th><th>成员</th><th></th></tr></thead><tbody>
+  {{range .Sets}}<tr><td>{{.Label}}</td><td class="mono">{{join .MemberCandidateIDs ", "}}</td><td><button class="ghost small" data-ids="{{join .MemberCandidateIDs ","}}">载入</button></td></tr>{{end}}
+  </tbody></table>
+</section>
+</main>
+<script src="/static/app.js"></script>
+<script>app.initCompare()</script>
+</body>
+</html>

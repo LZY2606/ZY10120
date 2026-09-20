@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>候选 {{.CandID}} · 粉末衍射索引</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <h1><a href="/" style="color:var(--fg)">粉末衍射晶格索引</a></h1>
+  <span class="sub"><a href="/jobs/{{.JobID}}">← 返回作业 {{.JobID}}</a></span>
+  <span style="flex:1"></span>
+  <span class="pill mono" id="ver"></span>
+</header>
+<main>
+<div class="grid two">
+  <section class="card">
+    <h2>晶格参数</h2>
+    <dl class="kv" id="cellkv"></dl>
+    <div class="row" style="margin-top:12px">
+      <button id="lockBtn">锁定候选</button>
+      <button class="ghost" id="deriveBtn">派生（以此为先验重算）</button>
+      <span id="lockMsg" class="muted"></span>
+    </div>
+    <h2 style="margin-top:18px">评分</h2>
+    <dl class="kv" id="scorekv"></dl>
+    <p class="muted" style="font-size:12px">分数仅用于排序，不表示“正确概率”；高歧义或大量缺失时请与其他候选比较。</p>
+  </section>
+
+  <section class="card">
+    <h2>峰位对照（观测 vs 预测）</h2>
+    <div id="stickPlot"></div>
+    <div class="row muted" style="font-size:12px;margin-top:6px">
+      <span><span style="color:var(--good)">━</span> 已解释</span>
+      <span><span style="color:var(--amb)">━</span> 歧义峰</span>
+      <span><span style="color:var(--bad)">━</span> 未解释 / 缺失</span>
+      <span><span style="color:var(--muted)">┊</span> 被排除</span>
+    </div>
+  </section>
+</div>
+
+<section class="card" style="margin-top:16px">
+  <h2>峰 → hkl 分配</h2>
+  <p class="muted" style="font-size:12px">残差为 <span class="mono">(d_pred−d_obs)/σ_eff</span>；歧义峰列出匹配窗内全部 hkl，主匹配加粗。</p>
+  <div style="overflow:auto"><table id="matchTable">
+    <thead><tr><th>峰#</th><th>观测 2θ/d</th><th>hkl（候选）</th><th>预测 d</th><th>残差 z</th><th>排除</th></tr></thead>
+    <tbody></tbody>
+  </table></div>
+</section>
+
+<div class="grid two" style="margin-top:16px">
+  <section class="card">
+    <h2>未解释峰 <span id="unxCount" class="tag bad"></span></h2>
+    <table id="unxTable"><thead><tr><th>峰#</th><th>d (Å)</th><th>2θ</th><th>原因</th></tr></thead><tbody></tbody></table>
+  </section>
+  <section class="card">
+    <h2>预测却缺失 <span id="missCount" class="tag warn"></span></h2>
+    <table id="missTable"><thead><tr><th>hkl</th><th>d (Å)</th><th>2θ</th><th>最近峰</th></tr></thead><tbody></tbody></table>
+  </section>
+</div>
+</main>
+<div class="tooltip" id="tip"></div>
+<script id="candidate-data" type="application/json">{{.Raw}}</script>
+<script>window.__JOB_ID__={{json .JobID}}; window.__CAND_ID__={{json .CandID}}; window.__OVERRIDES__={{json .Overrides}};</script>
+<script src="/static/app.js"></script>
+<script>app.initCandidate()</script>
+</body>
+</html>

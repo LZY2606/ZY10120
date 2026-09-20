@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>粉末衍射晶格索引</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <h1>粉末衍射晶格索引</h1>
+  <span class="sub">生成 · 评分 · 解释候选，而非给出唯一答案</span>
+  <span style="flex:1"></span>
+  <a class="pill" href="/compare">候选比较</a>
+  <span class="pill mono">{{.Algorithm}}</span>
+</header>
+<main>
+<div class="grid two">
+  <section class="card">
+    <h2>1. 峰位输入</h2>
+    <div class="row">
+      <div style="flex:1">
+        <label>合成 fixture（演示用）</label>
+        <select id="fixture">
+          <option value="">— 自定义输入 —</option>
+          {{range .Fixtures}}<option value="{{.Name}}">{{.Name}}（{{.Cell.System}}，λ={{.Wavelength}}Å）</option>{{end}}
+        </select>
+      </div>
+      <button class="ghost" id="loadFixture">载入</button>
+    </div>
+    <label>峰位列表（每行 <span class="mono">位置, 不确定度, 强度</span>，不确定度/强度可省略）</label>
+    <textarea id="peakText" placeholder="28.45,0.03,100&#10;32.96,0.03,62&#10;47.31,0.04,40"></textarea>
+    <div class="row" style="margin-top:8px">
+      <div style="flex:1">
+        <label>输入单位</label>
+        <select id="unit"><option value="two_theta">2θ（度）</option><option value="d">d-spacing（Å）</option></select>
+      </div>
+      <div style="flex:1">
+        <label>波长 λ（Å，Cu Kα=1.5406）</label>
+        <input type="number" step="any" id="wavelength" value="1.5406">
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>2. 搜索空间与规则</h2>
+    <label>晶系范围</label>
+    <div class="checks" id="systems">
+      {{range .Systems}}<label><input type="checkbox" value="{{.}}" checked> {{.}}</label>{{end}}
+    </div>
+    <label>系统消光（可多选；被排除 hkl 不会作为匹配证据）</label>
+    <select id="rules" multiple size="5">
+      {{range .ExtRules}}<option value="{{.Rule}}">{{.Name}} — {{.Desc}}</option>{{end}}
+    </select>
+    <div class="row" style="margin-top:8px">
+      <div style="flex:1"><label>体积上限 (Å³)</label><input type="number" id="maxVolume" value="5000"></div>
+      <div style="flex:1"><label>随机种子</label><input type="number" id="seed" value="42"></div>
+      <div style="flex:1"><label>随机尝试数</label><input type="number" id="randomTrials" value="150"></div>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <div style="flex:1"><label>Top-K</label><input type="number" id="topK" value="8"></div>
+      <div style="flex:1"><label>并行度（不影响排名）</label><input type="number" id="workers" value="4" min="1"></div>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <button id="submit">提交求解</button>
+      <button class="ghost" id="preview">仅校验输入</button>
+      <span id="submitMsg" class="muted"></span>
+    </div>
+  </section>
+</div>
+
+<section class="card" style="margin-top:16px">
+  <h2>最近作业</h2>
+  <table id="jobs"><thead><tr><th>作业</th><th>状态</th><th>指纹</th><th>时间</th><th></th></tr></thead><tbody></tbody></table>
+</section>
+
+<section class="card" id="validateCard" style="margin-top:16px;display:none">
+  <h2>输入状态</h2>
+  <div id="issues"></div>
+</section>
+</main>
+<footer>自包含演示服务 · 不连接外部晶体库 · 结果均为候选而非定论</footer>
+<div class="tooltip" id="tip"></div>
+<script src="/static/app.js"></script>
+<script>app.initIndex()</script>
+</body>
+</html>
